@@ -80,6 +80,10 @@ class Scanner {
             if (match('/')) {
                 // A comment goes until the end of the line.
                 while (peek() != '\n' && !isAtEnd()) advance();
+            } else if (match ('*')) {
+                // A multiline comment goes until a matching */
+                scanMultiline(1);
+
             } else {
                 addToken(TokenType.SLASH);
             }
@@ -103,6 +107,26 @@ class Scanner {
                 Lox.error(line, "Unexpected character.");
             }
             break;
+        }
+    }
+
+    private void scanMultiline(int depth) {
+        if (depth == 0) return;
+
+        if (isAtEnd()) Lox.error(line, "Unterminated multi-line comment");
+        char c = advance();
+        switch(c) {
+        case '/':
+            if (match('*')) {
+                // Enter one depth greater
+                scanMultiline(depth + 1);
+            }
+            break;
+        case '*':
+            if (match('/')) {
+                // Exit one depth
+                scanMultiline(depth - 1);
+            }
         }
     }
 
@@ -142,7 +166,7 @@ class Scanner {
     private void identifier() {
         while (isAlphanumeric(peek())) advance();
 
-	String text = source.substring(start, current);
+        String text = source.substring(start, current);
         TokenType type = keywords.get(text);
 
         if (type == null) type = TokenType.IDENTIFIER;
