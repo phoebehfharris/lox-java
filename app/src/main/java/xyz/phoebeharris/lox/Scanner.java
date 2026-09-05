@@ -11,25 +11,23 @@ import xyz.phoebeharris.lox.TokenType;
 class Scanner {
     private final String source;
     private final List<Token> tokens = new ArrayList<>();
-    private static final Map<String, TokenType> keywords =
-        Map.ofEntries(
-                      Map.entry("and", TokenType.AND),
-                      Map.entry("class", TokenType.CLASS),
-                      Map.entry("else", TokenType.ELSE),
-                      Map.entry("false", TokenType.FALSE),
-                      Map.entry("for", TokenType.FOR),
-                      Map.entry("fun", TokenType.FUN),
-                      Map.entry("if", TokenType.IF),
-                      Map.entry("nil", TokenType.NIL),
-                      Map.entry("or", TokenType.OR),
-                      Map.entry("print", TokenType.PRINT),
-                      Map.entry("return", TokenType.RETURN),
-                      Map.entry("super", TokenType.SUPER),
-                      Map.entry("this", TokenType.THIS),
-                      Map.entry("true", TokenType.TRUE),
-                      Map.entry("var", TokenType.VAR),
-                      Map.entry("while", TokenType.WHILE)
-                      );
+    private static final Map<String, TokenType> keywords = Map.ofEntries(
+            Map.entry("and", TokenType.AND),
+            Map.entry("class", TokenType.CLASS),
+            Map.entry("else", TokenType.ELSE),
+            Map.entry("false", TokenType.FALSE),
+            Map.entry("for", TokenType.FOR),
+            Map.entry("fun", TokenType.FUN),
+            Map.entry("if", TokenType.IF),
+            Map.entry("nil", TokenType.NIL),
+            Map.entry("or", TokenType.OR),
+            Map.entry("print", TokenType.PRINT),
+            Map.entry("return", TokenType.RETURN),
+            Map.entry("super", TokenType.SUPER),
+            Map.entry("this", TokenType.THIS),
+            Map.entry("true", TokenType.TRUE),
+            Map.entry("var", TokenType.VAR),
+            Map.entry("while", TokenType.WHILE));
 
     private int start = 0;
     private int current = 0;
@@ -52,87 +50,129 @@ class Scanner {
     private void scanToken() {
         char c = advance();
 
-        switch(c) {
-        case '(': addToken(TokenType.LEFT_PAREN); break;
-        case ')': addToken(TokenType.RIGHT_PAREN); break;
-        case '{': addToken(TokenType.LEFT_BRACE); break;
-        case '}': addToken(TokenType.RIGHT_BRACE); break;
-        case ',': addToken(TokenType.COMMA); break;
-        case '.': addToken(TokenType.DOT); break;
-        case '-': addToken(TokenType.MINUS); break;
-        case '+': addToken(TokenType.PLUS); break;
-        case ';': addToken(TokenType.SEMICOLON); break;
-        case '*': addToken(TokenType.STAR); break;
-        case '!':
-            addToken(match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
-            break;
-        case '=':
-            addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
-            break;
-        case '<':
-            addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
-            break;
-        case '>':
-            addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
-            break;
+        switch (c) {
+            case '(':
+                addToken(TokenType.LEFT_PAREN);
+                break;
+            case ')':
+                addToken(TokenType.RIGHT_PAREN);
+                break;
+            case '{':
+                addToken(TokenType.LEFT_BRACE);
+                break;
+            case '}':
+                addToken(TokenType.RIGHT_BRACE);
+                break;
+            case ',':
+                addToken(TokenType.COMMA);
+                break;
+            case '.':
+                addToken(TokenType.DOT);
+                break;
+            case '-':
+                addToken(TokenType.MINUS);
+                break;
+            case '+':
+                addToken(TokenType.PLUS);
+                break;
+            case ';':
+                addToken(TokenType.SEMICOLON);
+                break;
+            case '*':
+                addToken(TokenType.STAR);
+                break;
+            case '!':
+                addToken(match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
+                break;
+            case '=':
+                addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
+                break;
+            case '<':
+                addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
+                break;
+            case '>':
+                addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
+                break;
 
-        case '/':
-            if (match('/')) {
-                // A comment goes until the end of the line.
-                while (peek() != '\n' && !isAtEnd()) advance();
-            } else if (match ('*')) {
-                // A multiline comment goes until a matching */
-                scanMultiline(1);
+            case '/':
+                if (match('/')) {
+                    // A comment goes until the end of the line.
+                    while (peek() != '\n' && !isAtEnd())
+                        advance();
+                } else if (match('*')) {
+                    // A multiline comment goes until a matching */
+                    scanMultiline(1);
 
-            } else {
-                addToken(TokenType.SLASH);
-            }
-            break;
+                } else {
+                    addToken(TokenType.SLASH);
+                }
+                break;
 
-        case ' ':
-        case '\r':
-        case '\t':
-            // Ignore whitespace.
-            break;
-        case '\n':
-            line++;
-            break;
-        case '"': string(); break;
-        default:
-            if (isDigit(c)) {
-                number();
-            } else if (isAlpha(c)) {
-                identifier();
-            } else {
-                Lox.error(line, "Unexpected character.");
-            }
-            break;
+            case ' ':
+            case '\r':
+            case '\t':
+                // Ignore whitespace.
+                break;
+            case '\n':
+                line++;
+                break;
+            case '"':
+                string();
+                break;
+            default:
+                if (isDigit(c)) {
+                    number();
+                } else if (isAlpha(c)) {
+                    identifier();
+                } else {
+                    Lox.error(line, "Unexpected character.");
+                }
+                break;
         }
     }
 
     private void scanMultiline(int depth) {
-        if (depth == 0) return;
+        if (depth == 0)
+            return;
 
-        if (isAtEnd()) Lox.error(line, "Unterminated multi-line comment");
+        if (isAtEnd()) {
+            Lox.error(line, "Unterminated multi-line comment");
+            return;
+        }
+
         char c = advance();
-        switch(c) {
-        case '/':
-            if (match('*')) {
-                // Enter one depth greater
-                scanMultiline(depth + 1);
-            }
-            break;
-        case '*':
-            if (match('/')) {
-                // Exit one depth
-                scanMultiline(depth - 1);
-            }
+        switch (c) {
+            case '/':
+                if (match('*')) {
+                    // Enter one depth greater
+                    scanMultiline(depth + 1);
+                } else {
+                    scanMultiline(depth);
+                }
+                break;
+            case '*':
+                if (match('/')) {
+                    // Exit one depth
+                    scanMultiline(depth - 1);
+                } else {
+                    scanMultiline(depth);
+                }
+                break;
+            case '\n':
+                line++;
+                scanMultiline(depth);
+                break;
+
+            default:
+                scanMultiline(depth);
+                break;
         }
     }
 
     private void string() {
         while (peek() != '"' && !isAtEnd()) {
-            if (peek() == '\n') line++;
+            if (peek() == '\n')
+                line++;
             advance();
         }
 
@@ -150,45 +190,53 @@ class Scanner {
     }
 
     private void number() {
-        while (isDigit(peek())) advance();
+        while (isDigit(peek()))
+            advance();
 
         // Look for a fractional part.
         if (peek() == '.' && isDigit(peekNext())) {
             // Consume the '.'
             advance();
 
-            while (isDigit(peek())) advance();
+            while (isDigit(peek()))
+                advance();
         }
 
         addToken(TokenType.NUMBER, Double.parseDouble(source.substring(start, current)));
     }
 
     private void identifier() {
-        while (isAlphanumeric(peek())) advance();
+        while (isAlphanumeric(peek()))
+            advance();
 
         String text = source.substring(start, current);
         TokenType type = keywords.get(text);
 
-        if (type == null) type = TokenType.IDENTIFIER;
+        if (type == null)
+            type = TokenType.IDENTIFIER;
 
         addToken(type);
     }
 
     private boolean match(char expected) {
-        if (isAtEnd()) return false;
-        if (source.charAt(current) != expected) return false;
+        if (isAtEnd())
+            return false;
+        if (source.charAt(current) != expected)
+            return false;
 
         current++;
         return true;
     }
 
     private char peek() {
-        if (isAtEnd()) return '\0';
+        if (isAtEnd())
+            return '\0';
         return source.charAt(current);
     }
 
     private char peekNext() {
-        if (current + 1 >= source.length()) return '\0';
+        if (current + 1 >= source.length())
+            return '\0';
 
         return source.charAt(current + 1);
     }
@@ -199,8 +247,8 @@ class Scanner {
 
     private boolean isAlpha(char c) {
         return (c >= 'a' && c <= 'z') ||
-            (c >= 'A' && c <= 'Z') ||
-            c == '_';
+                (c >= 'A' && c <= 'Z') ||
+                c == '_';
     }
 
     private boolean isAlphanumeric(char c) {
