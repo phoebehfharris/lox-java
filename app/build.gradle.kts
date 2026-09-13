@@ -42,3 +42,14 @@ application {
     // Define the main class for the application.
     mainClass = "xyz.phoebeharris.lox.Lox"
 }
+
+tasks.register<JavaExec>("generateAst") {
+    group = "application"
+    description = "Generate the abstract syntax tree classes"
+
+    mainClass.set("xyz.phoebeharris.loxtools.GenerateAst")
+
+    classpath = sourceSets.named("main").get().runtimeClasspath
+
+    args("src/main/java/xyz/phoebeharris/lox")
+}
