@@ -43,13 +43,21 @@ application {
     mainClass = "xyz.phoebeharris.lox.Lox"
 }
 
+sourceSets {
+    create("tools") {
+        java {
+            srcDir("src/main/java/xyz/phoebeharris/loxtools")
+        }
+    }
+}
+
 tasks.register<JavaExec>("generateAst") {
     group = "application"
     description = "Generate the abstract syntax tree classes"
 
     mainClass.set("xyz.phoebeharris.loxtools.GenerateAst")
 
-    classpath = sourceSets.named("main").get().runtimeClasspath
+    classpath = sourceSets.named("tools").get().runtimeClasspath
 
     args("src/main/java/xyz/phoebeharris/lox")
 }
