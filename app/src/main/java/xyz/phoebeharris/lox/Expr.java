@@ -1,68 +1,40 @@
 package xyz.phoebeharris.lox;
 
-import java.util.List;
-
-abstract class Expr {
-  interface Visitor<R> {
+public interface Expr {
+  public interface Visitor<R> {
     R visitBinaryExpr(Binary expr);
     R visitGroupingExpr(Grouping expr);
     R visitLiteralExpr(Literal expr);
     R visitUnaryExpr(Unary expr);
   }
-  static class Binary extends Expr {
-    Binary(Expr left, Token operator, Expr right) {
-      this.left = left;
-      this.operator = operator;
-      this.right = right;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitBinaryExpr(this)
-    }
-
-    final Expr left;
-    final Token operator;
-    final Expr right;
-  }
-  static class Grouping extends Expr {
-    Grouping(Expr expression) {
-      this.expression = expression;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitGroupingExpr(this)
-    }
-
-    final Expr expression;
-  }
-  static class Literal extends Expr {
-    Literal(Object value) {
-      this.value = value;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitLiteralExpr(this)
-    }
-
-    final Object value;
-  }
-  static class Unary extends Expr {
-    Unary(Token operator, Expr right) {
-      this.operator = operator;
-      this.right = right;
-    }
-
-    @Override
-    <R> R accept(Visitor<R> visitor) {
-      return visitor.visitUnaryExpr(this)
-    }
-
-    final Token operator;
-    final Expr right;
-  }
 
   abstract <R> R accept(Visitor<R> visitor);
+  public record Binary(Expr left, Token operator, Expr right) implements Expr {
+
+    @Override
+    public <R> R accept(Visitor<R> visitor) {
+      return visitor.visitBinaryExpr(this);
+    }
+  }
+  public record Grouping(Expr expression) implements Expr {
+
+    @Override
+    public <R> R accept(Visitor<R> visitor) {
+      return visitor.visitGroupingExpr(this);
+    }
+  }
+  public record Literal(Object value) implements Expr {
+
+    @Override
+    public <R> R accept(Visitor<R> visitor) {
+      return visitor.visitLiteralExpr(this);
+    }
+  }
+  public record Unary(Token operator, Expr right) implements Expr {
+
+    @Override
+    public <R> R accept(Visitor<R> visitor) {
+      return visitor.visitUnaryExpr(this);
+    }
+  }
 }

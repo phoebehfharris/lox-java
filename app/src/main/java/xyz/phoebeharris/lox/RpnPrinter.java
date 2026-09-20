@@ -7,24 +7,24 @@ class RpnPrinter implements Expr.Visitor<String> {
 
     @Override
     public String visitBinaryExpr(Expr.Binary expr) {
-        return rpnAssemble(expr.operator.lexeme(), expr.left, expr.right);
+        return rpnAssemble(expr.operator().lexeme(), expr.left(), expr.right());
     }
 
     @Override
     public String visitGroupingExpr(Expr.Grouping expr) {
-        return rpnAssemble("group", expr.expression);
+        return rpnAssemble("group", expr.expression());
     }
 
     @Override
     public String visitLiteralExpr(Expr.Literal expr) {
-        if (expr.value == null)
+        if (expr.value() == null)
             return "nil";
-        return expr.value.toString();
+        return expr.value().toString();
     }
 
     @Override
     public String visitUnaryExpr(Expr.Unary expr) {
-        return rpnAssemble(expr.operator.lexeme(), expr.right);
+        return rpnAssemble(expr.operator().lexeme(), expr.right());
     }
 
     private String rpnAssemble(String name, Expr... exprs) {
