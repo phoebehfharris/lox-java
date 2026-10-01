@@ -59,6 +59,34 @@ class ParserTest {
     //}
 
     @Test
+    public void testParseCommaOp() {
+        String source = "1 == 1, 2 == 2";
+
+        Scanner scanner = new Scanner(source);
+        List<Token> tokens = scanner.scanTokens();
+        Parser parser = new Parser(tokens);
+        Expr expression = parser.parse();
+
+        assertEquals(
+            new Expr.Binary(
+                new Expr.Binary(
+                    new Expr.Literal(1.0),
+                    new Token(TokenType.EQUAL_EQUAL, "==", null, 1),
+                    new Expr.Literal(1.0)
+                ),
+                new Token(TokenType.COMMA, ",", null, 1),
+                new Expr.Binary(
+                    new Expr.Literal(2.0),
+                    new Token(TokenType.EQUAL_EQUAL, "==", null, 1),
+                    new Expr.Literal(2.0)
+                )
+
+            ),
+            expression
+        );
+    }
+
+    @Test
     public void testParseFail() {
         String source = "a =";
 
