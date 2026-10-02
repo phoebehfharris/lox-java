@@ -81,6 +81,23 @@ class ScannerTest {
     }
 
     @Test
+    public void testTernaryOp() {
+        String source = "1 ? 2 : 1";
+
+        Scanner scanner = new Scanner(source);
+        List<Token> tokens = scanner.scanTokens();
+
+        assertIterableEquals(new ArrayList<Token>(List.of(
+            new Token(TokenType.NUMBER, "1", 1.0, 1),
+            new Token(TokenType.QUESTION_MARK, "?", null, 1),
+            new Token(TokenType.NUMBER, "2", 2.0, 1),
+            new Token(TokenType.COLON, ":", null, 1),
+            new Token(TokenType.NUMBER, "1", 1.0, 1),
+            new Token(TokenType.EOF, "", null, 1))),
+            tokens);
+    }
+
+    @Test
     public void testMultilineCommentFail() {
         String source = "/*";
 
