@@ -95,6 +95,25 @@ class ParserTest {
     }
 
     @Test
+    public void testTernary() {
+        String source = "1.0 ? 1.0 : 1.0";
+
+        Scanner scanner = new Scanner(source);
+        List<Token> tokens = scanner.scanTokens();
+        Parser parser = new Parser(tokens);
+        Expr expression = parser.parse();
+
+        assertEquals(
+            new Expr.Ternary(
+                new Expr.Literal(1.0),
+                new Expr.Literal(1.0),
+                new Expr.Literal(1.0)
+            ),
+            expression
+        );
+    }
+
+    @Test
     public void testParseFail() {
         String source = "a =";
 

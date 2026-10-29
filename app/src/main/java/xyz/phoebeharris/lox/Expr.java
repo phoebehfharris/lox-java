@@ -6,6 +6,7 @@ public interface Expr {
     R visitGroupingExpr(Grouping expr);
     R visitLiteralExpr(Literal expr);
     R visitUnaryExpr(Unary expr);
+    R visitTernaryExpr(Ternary expr);
   }
 
   abstract <R> R accept(Visitor<R> visitor);
@@ -36,5 +37,13 @@ public interface Expr {
     public <R> R accept(Visitor<R> visitor) {
       return visitor.visitUnaryExpr(this);
     }
+  }
+
+  public record Ternary(Expr condition, Expr left, Expr right) implements Expr {
+    @Override
+    public <R> R accept(Visitor<R> visitor) {
+      return visitor.visitTernaryExpr(this);
+    }
+
   }
 }

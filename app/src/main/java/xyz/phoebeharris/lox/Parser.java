@@ -27,7 +27,7 @@ class Parser {
     }
 
     private Expr commaop() {
-        Expr expr = equality();
+        Expr expr = ternary();
 
         while(match(COMMA)) {
             Token operator = previous();
@@ -35,6 +35,20 @@ class Parser {
             expr = new Expr.Binary(expr, operator, right);
         }
 
+        return expr;
+    }
+
+    private Expr ternary() {
+        Expr expr = equality();
+
+        while (match(QUESTION_MARK)) {
+            Expr left = equality();
+            if (!match(COLON)) {
+                throw error(peek(), "expected a colon as part of ternary statement");
+            }
+            Expr right = equality();
+            expr = new Expr.Ternary(expr, left, right);
+        }
         return expr;
     }
 

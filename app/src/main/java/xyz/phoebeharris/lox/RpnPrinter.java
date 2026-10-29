@@ -27,6 +27,11 @@ class RpnPrinter implements Expr.Visitor<String> {
         return rpnAssemble(expr.operator().lexeme(), expr.right());
     }
 
+    @Override
+    public String visitTernaryExpr(Expr.Ternary expr) {
+        return rpnAssemble("cond", expr.condition(), expr.left(), expr.right());
+    }
+
     private String rpnAssemble(String name, Expr... exprs) {
         StringBuilder builder = new StringBuilder();
 
