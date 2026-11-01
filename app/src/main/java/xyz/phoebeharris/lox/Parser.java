@@ -23,6 +23,14 @@ class Parser {
     }
 
     private Expr expression() {
+        return binarynolefthand();
+    }
+
+    private Expr binarynolefthand() {
+        if (match(COMMA, BANG_EQUAL, EQUAL_EQUAL, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL, STAR, SLASH)) {
+            Expr right = commaop();
+            throw error(peek(), "binary operator expects left-hand operand");
+        }
         return commaop();
     }
 

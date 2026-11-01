@@ -61,3 +61,10 @@ tasks.register<JavaExec>("generateAst") {
 
     args("src/main/java/xyz/phoebeharris/lox")
 }
+
+tasks.test {
+    testLogging {
+        showStandardStreams = true
+        events("passed", "failed", "skipped")
+    }
+}

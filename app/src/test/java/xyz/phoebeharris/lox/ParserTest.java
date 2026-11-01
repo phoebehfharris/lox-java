@@ -114,6 +114,19 @@ class ParserTest {
     }
 
     @Test
+    public void testNoLeftHandFail() {
+        String source = "* 2";
+
+        Scanner scanner = new Scanner(source);
+        List<Token> tokens = scanner.scanTokens();
+        Parser parser = new Parser(tokens);
+        System.err.println("CHECK THIS FAILS");
+        Expr expression = parser.parse();
+
+        assertNull(expression);
+    }
+
+    @Test
     public void testParseFail() {
         String source = "a =";
 
